@@ -16,6 +16,12 @@ public func configure(_ app: Application) async throws {
         database: Environment.get("DATABASE_NAME") ?? "vapor_database",
         tls: .prefer(try .init(configuration: .clientDefault)))
     ), as: .psql)
+    
+    app.migrations.add(CreateClients())
+    app.migrations.add(CreateOwners())
+    app.migrations.add(CreateCars())
+    
+    try await app.autoMigrate().get()
 
     // register routes
     try routes(app)
