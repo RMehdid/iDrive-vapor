@@ -15,7 +15,7 @@ struct ClientController: RouteCollection {
         clients.post(use: create)
         clients.put(use: update)
         
-        clients.group(":userId") { client in
+        clients.group(":client_id") { client in
             client.delete(use: delete)
         }
     }
@@ -46,7 +46,7 @@ struct ClientController: RouteCollection {
     }
     
     func delete(req: Request) throws -> EventLoopFuture<HTTPStatus> {
-        Client.find(req.parameters.get("userId"), on: req.db)
+        Client.find(req.parameters.get("client_id"), on: req.db)
             .unwrap(or: Abort(.notFound))
             .flatMap { $0.delete(on: req.db)}
             .transform(to: .ok)
