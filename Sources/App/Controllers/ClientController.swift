@@ -23,4 +23,20 @@ struct ClientController: RouteCollection {
         let client = try req.content.decode(Client.self)
         return client.save(on: req.db).transform(to: .ok)
     }
+    
+    func update(req: Request) throws -> EventLoopFuture<HTTPStatus> {
+        let client = try req.content.decode(Client.self)
+        
+        return Client.find(client.id, on: req.db)
+            .unwrap(or: Abort(.notFound))
+            .flatMap {
+                $0.firstname = client.firstname
+                $0.lastname = client.lastname
+                $0.email = client.email
+                $0.phone = client.phone
+                $0.profileImageUrl = client.profileImageUrl
+                $0.rating = client.rating
+                return $0.update(on: req.db).transform(to: .ok)
+            }
+    }
 }
