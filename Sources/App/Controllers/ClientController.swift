@@ -39,4 +39,11 @@ struct ClientController: RouteCollection {
                 return $0.update(on: req.db).transform(to: .ok)
             }
     }
+    
+    func delete(req: Request) throws -> EventLoopFuture<HTTPStatus> {
+        Client.find(req.parameters.get("userId"), on: req.db)
+            .unwrap(or: Abort(.notFound))
+            .flatMap { $0.delete(on: req.db)}
+            .transform(to: .ok)
+    }
 }
