@@ -19,7 +19,7 @@ public func configure(_ app: Application) async throws {
     
     app.migrations.add(CreateClients())
     app.migrations.add(CreateOwners())
-    app.migrations.add(CreateCars())
+//    app.migrations.add(CreateCars())
     
     try await app.autoMigrate().get()
 

@@ -20,13 +20,13 @@ final class Client: Model, Content {
     @Field(key: "lastname")
     var lastname: String
     
-    @Field(key: "email")
+    @OptionalField(key: "email")
     var email: String?
     
     @Field(key: "phone")
     var phone: String
     
-    @Field(key: "profile_image_url")
+    @OptionalField(key: "profile_image_url")
     var profileImageUrl: String?
     
     @Field(key: "rating")

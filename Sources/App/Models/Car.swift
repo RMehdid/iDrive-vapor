@@ -27,7 +27,7 @@ final class Car: Model, Content {
     @Field(key: "fuel_level")
     var fuelLevel: Int
     
-    @Field(key: "engine")
+    @Group(key: "engine")
     var engine: Engine
     
     @Field(key: "coordinates")

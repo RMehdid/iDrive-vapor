@@ -8,17 +8,12 @@
 import Fluent
 import Vapor
 
-final class Engine: Model {
+final class Engine: Fields {
     
-    static let schema: String = "engines"
-    
-    @ID(key: .id)
-    var id: UUID?
-    
-    @Field(key: "type")
+    @Enum(key: "type")
     var type: EngineType
     
-    @Field(key: "transmission")
+    @Enum(key: "transmission")
     var transmission: Transmission
     
     @Field(key: "horse_power")
