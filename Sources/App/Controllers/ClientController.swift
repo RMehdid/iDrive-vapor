@@ -13,6 +13,11 @@ struct ClientController: RouteCollection {
         let clients = routes.grouped("clients")
         clients.get(use: index)
         clients.post(use: create)
+        clients.put(use: update)
+        
+        clients.group(":userId") { client in
+            client.delete(use: delete)
+        }
     }
     
     func index(req: Request) throws -> EventLoopFuture<[Client]> {
