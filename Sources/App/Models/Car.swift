@@ -12,8 +12,8 @@ final class Car: Model, Content {
     
     static let schema = "cars"
     
-    @ID(custom: "id", generatedBy: .user)
-    var id: Int?
+    @ID(key: .id)
+    var id: UUID?
     
     @Field(key: "make")
     var make: String
@@ -27,19 +27,19 @@ final class Car: Model, Content {
     @Field(key: "fuel_level")
     var fuelLevel: Int
     
-    @Group(key: "engine")
+    @Parent(key: "engine_id")
     var engine: Engine
     
-    @Field(key: "coordinates")
-    var coordinates: Coordinates
+    @OptionalParent(key: "coordinates_id")
+    var coordinates: Coordinates?
     
     @Field(key: "image_url")
-    var imageUrl: String
+    var imageUrl: URL
     
-    @Field(key: "owner_id")
-    var ownerId: String
+    @Parent(key: "owner_id")
+    var owner: Owner
     
-    @Field(key: "status")
+    @Enum(key: "status")
     var status: CarStatus
     
     @Field(key: "rating")
@@ -50,4 +50,22 @@ final class Car: Model, Content {
     
     @Field(key: "is_free_cancelation")
     var isFreeCancelation: Bool
+    
+    init() { }
+    
+    init(id: UUID? = nil, make: String, model: String, year: Int, fuelLevel: Int, engineId: UUID, coordinatesId: UUID? = nil, imageUrl: URL, ownerId: UUID, status: CarStatus, rating: Double, color: String, isFreeCancelation: Bool) {
+        self.id = id
+        self.make = make
+        self.model = model
+        self.year = year
+        self.fuelLevel = fuelLevel
+        self.$engine.id = engineId
+        self.$coordinates.id = coordinatesId
+        self.imageUrl = imageUrl
+        self.$owner.id = ownerId
+        self.status = status
+        self.rating = rating
+        self.color = color
+        self.isFreeCancelation = isFreeCancelation
+    }
 }

@@ -8,6 +8,6 @@
 import Foundation
 
 enum EngineType: String, Codable {
-    case petrol = "Petrol"
-    case diesel = "Diesel"
+    case petrol
+    case diesel
 }

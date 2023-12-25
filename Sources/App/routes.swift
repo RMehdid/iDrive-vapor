@@ -14,5 +14,5 @@ func routes(_ app: Application) throws {
     
     try app.register(collection: ClientController())
     try app.register(collection: OwnerController())
-//    try app.register(collection: CarController())
+    try app.register(collection: CarController())
 }

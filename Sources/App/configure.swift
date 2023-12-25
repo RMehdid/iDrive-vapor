@@ -17,9 +17,11 @@ public func configure(_ app: Application) async throws {
         tls: .prefer(try .init(configuration: .clientDefault)))
     ), as: .psql)
     
-    app.migrations.add(CreateClients())
-    app.migrations.add(CreateOwners())
-//    app.migrations.add(CreateCars())
+    app.migrations.add(Client.Create())
+    app.migrations.add(Owner.Create())
+    app.migrations.add(Engine.Create())
+    app.migrations.add(Coordinates.Create())
+    app.migrations.add(Car.Create())
     
     try await app.autoMigrate().get()
 

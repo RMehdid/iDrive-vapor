@@ -7,9 +7,7 @@
 
 import Foundation
 
-enum CarStatus: Codable {
+enum CarStatus: String, Codable {
     case available
     case rented
-    case outOfService
-    case lowFuel
 }

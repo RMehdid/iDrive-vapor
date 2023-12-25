@@ -15,12 +15,12 @@ struct OwnerController: RouteCollection {
         owners.post(use: create)
     }
     
-    func index(req: Request) throws -> EventLoopFuture<[Owner]> {
-        return Owner.query(on: req.db).all()
+    func index(req: Request) async throws -> [Owner] {
+        return try await Owner.query(on: req.db).all()
     }
     
-    func create(req: Request) throws -> EventLoopFuture<HTTPStatus> {
+    func create(req: Request) async throws -> HTTPStatus {
         let owners = try req.content.decode(Owner.self)
-        return owners.save(on: req.db).transform(to: .ok)
+        return try await owners.save(on: req.db).transform(to: .ok).get()
     }
 }
