@@ -15,7 +15,7 @@ extension Car {
                 .field("make", .string, .required)
                 .field("model", .string, .required)
                 .field("year", .int, .required)
-                .field("fuelLevel", .int, .required)
+                .field("fuel_level", .int, .required)
                 .field("image_url", .string)
                 .field("engine_id", .uuid, .foreignKey("engines", .key("id"), onDelete: .noAction, onUpdate: .noAction))
                 .field("coordinates_id", .uuid, .foreignKey("coordinates", .key("id"), onDelete: .noAction, onUpdate: .noAction))
