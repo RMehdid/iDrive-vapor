@@ -11,8 +11,8 @@ import Vapor
 final class Owner: Model, Content {
     static let schema: String = "owners"
     
-    @ID(key: .id)
-    var id: UUID?
+    @ID(custom: "id")
+    var id: Int?
     
     @Field(key: "firstname")
     var firstname: String
@@ -34,7 +34,7 @@ final class Owner: Model, Content {
     
     required init() { }
     
-    init(id: UUID? = nil, firstname: String, lastname: String, email: String? = nil, phone: String, profileImageUrl: String? = nil, rating: Double) {
+    init(id: Int? = nil, firstname: String, lastname: String, email: String? = nil, phone: String, profileImageUrl: String? = nil, rating: Double) {
         self.id = id
         self.firstname = firstname
         self.lastname = lastname

@@ -12,8 +12,8 @@ final class Car: Model, Content {
     
     static let schema = "cars"
     
-    @ID(key: .id)
-    var id: UUID?
+    @ID(custom: "id")
+    var id: Int?
     
     @Field(key: "make")
     var make: String
