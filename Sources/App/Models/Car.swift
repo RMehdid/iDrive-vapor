@@ -12,7 +12,7 @@ final class Car: Model, Content {
     
     static let schema = "cars"
     
-    @ID(custom: "id")
+    @ID(custom: "id", generatedBy: .user)
     var id: Int?
     
     @Field(key: "make")

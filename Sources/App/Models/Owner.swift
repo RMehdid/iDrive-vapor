@@ -11,7 +11,7 @@ import Vapor
 final class Owner: Model, Content {
     static let schema: String = "owners"
     
-    @ID(custom: "id")
+    @ID(custom: "id", generatedBy: .user)
     var id: Int?
     
     @Field(key: "firstname")
