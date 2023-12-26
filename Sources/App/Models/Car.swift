@@ -10,7 +10,7 @@ import Vapor
 
 final class Car: Model, Content {
     
-    static let schema = "cars"
+    static let schema: String = "cars"
     
     @ID(key: .id)
     var id: UUID?

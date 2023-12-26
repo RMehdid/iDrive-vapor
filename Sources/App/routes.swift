@@ -12,7 +12,9 @@ func routes(_ app: Application) throws {
         
     }
     
-    try app.register(collection: ClientController())
-    try app.register(collection: OwnerController())
-    try app.register(collection: CarController())
+    try app.register(collection: Client.Controller())
+    try app.register(collection: Owner.Controller())
+    try app.register(collection: Car.Controller())
+    try app.register(collection: Engine.Controller())
+    try app.register(collection: Coordinates.Controller())
 }

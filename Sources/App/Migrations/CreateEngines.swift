@@ -14,7 +14,7 @@ extension Engine {
             return database.schema("engines")
                 .id()
                 .field("type", .string, .required)
-                .field("transmisstion", .string, .required)
+                .field("transmission", .string, .required)
                 .field("horse_power", .int, .required)
                 .create()
         }
