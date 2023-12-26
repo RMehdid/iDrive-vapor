@@ -8,9 +8,9 @@
 import Fluent
 
 extension Car {
-    struct Create: Migration {
-        func prepare(on database: Database) -> EventLoopFuture<Void> {
-            return database.schema("cars")
+    struct Create: AsyncMigration {
+        func prepare(on database: Database) async throws {
+            try await database.schema("cars")
                 .field(.id, .int, .required)
                 .field("make", .string, .required)
                 .field("model", .string, .required)
@@ -28,8 +28,8 @@ extension Car {
                 .create()
         }
         
-        func revert(on database: Database) -> EventLoopFuture<Void> {
-            return database.schema("cars")
+        func revert(on database: Database) async throws {
+            try await database.schema("cars")
                 .delete()
         }
     }

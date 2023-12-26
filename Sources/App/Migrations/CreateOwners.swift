@@ -8,9 +8,9 @@
 import Fluent
 
 extension Owner {
-    struct Create: Migration {
-        func prepare(on database: Database) -> EventLoopFuture<Void> {
-            return database.schema("owners")
+    struct Create: AsyncMigration {
+        func prepare(on database: Database) async throws {
+            try await database.schema("owners")
                 .field(.id, .int, .required)
                 .field("firstname", .string, .required)
                 .field("lastname", .string, .required)
@@ -22,8 +22,8 @@ extension Owner {
                 .create()
         }
         
-        func revert(on database: Database) -> EventLoopFuture<Void> {
-            return database.schema("owners")
+        func revert(on database: Database) async throws {
+            try await database.schema("owners")
                 .delete()
         }
     }

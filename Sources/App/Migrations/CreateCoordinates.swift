@@ -9,17 +9,17 @@ import Fluent
 import Vapor
 
 extension Coordinates {
-    struct Create: Migration {
-        func prepare(on database: Database) -> EventLoopFuture<Void> {
-            return database.schema("coordinates")
+    struct Create: AsyncMigration {
+        func prepare(on database: Database) async throws {
+            try await database.schema("coordinates")
                 .id()
                 .field("latitude", .double, .required)
                 .field("longitude", .double, .required)
                 .create()
         }
         
-        func revert(on database: Database) -> EventLoopFuture<Void> {
-            return database.schema("coordinates")
+        func revert(on database: Database) async throws {
+            try await database.schema("coordinates")
                 .delete()
         }
     }

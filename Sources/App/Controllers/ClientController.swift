@@ -21,20 +21,21 @@ extension Client {
             }
         }
         
-        func index(req: Request) throws -> EventLoopFuture<[Client]> {
-            return Client.query(on: req.db).all()
+        func index(req: Request) async throws -> [Client] {
+            return try await Client.query(on: req.db).all()
         }
         
-        func create(req: Request) throws -> EventLoopFuture<HTTPStatus> {
+        func create(req: Request) async throws -> HTTPStatus {
             let client = try req.content.decode(Client.self)
-            return client.save(on: req.db).transform(to: .ok)
+            try await client.save(on: req.db)
+            
+            return .ok
         }
         
-        func update(req: Request) throws -> EventLoopFuture<HTTPStatus> {
+        func update(req: Request) async throws -> HTTPStatus {
             let client = try req.content.decode(Client.self)
             
-            return Client.find(client.id, on: req.db)
-                .unwrap(or: Abort(.notFound))
+            try await Client.find(client.id, on: req.db)
                 .flatMap {
                     $0.firstname = client.firstname
                     $0.lastname = client.lastname
@@ -42,15 +43,17 @@ extension Client {
                     $0.phone = client.phone
                     $0.profileImageUrl = client.profileImageUrl
                     $0.rating = client.rating
-                    return $0.update(on: req.db).transform(to: .ok)
+                    $0.update(on: req.db)
                 }
+            
+            return .ok
         }
         
-        func delete(req: Request) throws -> EventLoopFuture<HTTPStatus> {
-            Client.find(req.parameters.get("client_id"), on: req.db)
-                .unwrap(or: Abort(.notFound))
+        func delete(req: Request) async throws -> HTTPStatus {
+            try await Client.find(req.parameters.get("client_id"), on: req.db)
                 .flatMap { $0.delete(on: req.db)}
-                .transform(to: .ok)
+                
+            return .ok
         }
     }
 }

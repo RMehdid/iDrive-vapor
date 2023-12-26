@@ -9,9 +9,9 @@ import Fluent
 import Vapor
 
 extension Engine {
-    struct Create: Migration {
-        func prepare(on database: Database) -> EventLoopFuture<Void> {
-            return database.schema("engines")
+    struct Create: AsyncMigration {
+        func prepare(on database: Database) async throws {
+            try await database.schema("engines")
                 .id()
                 .field("type", .string, .required)
                 .field("transmission", .string, .required)
@@ -19,8 +19,8 @@ extension Engine {
                 .create()
         }
         
-        func revert(on database: Database) -> EventLoopFuture<Void> {
-            return database.schema("engines")
+        func revert(on database: Database) async throws {
+            try await database.schema("engines")
                 .delete()
         }
     }

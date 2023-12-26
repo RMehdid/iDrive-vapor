@@ -27,14 +27,14 @@ extension Owner {
         
         func create(req: Request) async throws -> HTTPStatus {
             let owners = try req.content.decode(Owner.self)
-            return try await owners.save(on: req.db).transform(to: .ok).get()
+            try await owners.save(on: req.db)
+            return .ok
         }
         
-        func update(req: Request) throws -> EventLoopFuture<HTTPStatus> {
+        func update(req: Request) async throws -> HTTPStatus {
             let owner = try req.content.decode(Owner.self)
             
-            return Owner.find(owner.id, on: req.db)
-                .unwrap(or: Abort(.notFound))
+            try await Owner.find(owner.id, on: req.db)
                 .flatMap {
                     $0.firstname = owner.firstname
                     $0.lastname = owner.lastname
@@ -42,15 +42,17 @@ extension Owner {
                     $0.phone = owner.phone
                     $0.profileImageUrl = owner.profileImageUrl
                     $0.rating = owner.rating
-                    return $0.update(on: req.db).transform(to: .ok)
+                    $0.update(on: req.db)
                 }
+            
+            return .ok
         }
         
-        func delete(req: Request) throws -> EventLoopFuture<HTTPStatus> {
-            Owner.find(req.parameters.get("owner_id"), on: req.db)
-                .unwrap(or: Abort(.notFound))
-                .flatMap { $0.delete(on: req.db)}
-                .transform(to: .ok)
+        func delete(req: Request) async throws -> HTTPStatus {
+            try await Owner.find(req.parameters.get("owner_id"), on: req.db)
+                .flatMap { $0.delete(on: req.db) }
+            
+            return .ok
         }
     }
 }
