@@ -23,7 +23,14 @@ public func configure(_ app: Application) async throws {
     app.migrations.add(Coordinates.Create())
     app.migrations.add(Car.Create())
     
-    try await app.autoMigrate().get()
+    try await Client.Create().prepare(on: app.db).get()
+    try await Owner.Create().prepare(on: app.db).get()
+    try await Engine.Create().prepare(on: app.db).get()
+    try await Coordinates.Create().prepare(on: app.db).get()
+    try await Car.Create().prepare(on: app.db).get()
+
+    
+//    try await app.autoMigrate().get()
 
     // register routes
     try routes(app)

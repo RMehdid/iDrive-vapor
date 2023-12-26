@@ -12,8 +12,8 @@ final class Car: Model, Content {
     
     static let schema: String = "cars"
     
-    @ID(key: .id)
-    var id: UUID?
+    @ID(custom: .id, generatedBy: .user)
+    var id: Int?
     
     @Field(key: "make")
     var make: String
@@ -27,17 +27,17 @@ final class Car: Model, Content {
     @Field(key: "fuel_level")
     var fuelLevel: Int
     
-    @Parent(key: "engine_id")
-    var engine: Engine
+    @Field(key: "engine_id")
+    var engine: Engine.IDValue
     
-    @OptionalParent(key: "coordinates_id")
-    var coordinates: Coordinates?
+    @OptionalField(key: "coordinates_id")
+    var coordinates: Coordinates.IDValue?
     
     @Field(key: "image_url")
     var imageUrl: URL
     
-    @Parent(key: "owner_id")
-    var owner: Owner
+    @Field(key: "owner_id")
+    var owner: Owner.IDValue
     
     @Enum(key: "status")
     var status: CarStatus
@@ -53,16 +53,16 @@ final class Car: Model, Content {
     
     init() { }
     
-    init(id: UUID? = nil, make: String, model: String, year: Int, fuelLevel: Int, engineId: UUID, coordinatesId: UUID? = nil, imageUrl: URL, ownerId: UUID, status: CarStatus, rating: Double, color: String, isFreeCancelation: Bool) {
+    init(id: Int? = nil, make: String, model: String, year: Int, fuelLevel: Int, engineId: UUID, coordinatesId: UUID? = nil, imageUrl: URL, ownerId: Int, status: CarStatus, rating: Double, color: String, isFreeCancelation: Bool) {
         self.id = id
         self.make = make
         self.model = model
         self.year = year
         self.fuelLevel = fuelLevel
-        self.$engine.id = engineId
-        self.$coordinates.id = coordinatesId
+        self.engine = engineId
+        self.coordinates = coordinatesId
         self.imageUrl = imageUrl
-        self.$owner.id = ownerId
+        self.owner = ownerId
         self.status = status
         self.rating = rating
         self.color = color

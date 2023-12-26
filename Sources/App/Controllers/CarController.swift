@@ -17,11 +17,7 @@ extension Car {
             
             cars.group(":car_id") { car in
                 car.get(use: getCar)
-                
-                let coordinates = car.grouped("coordinates")
-                
-                coordinates.put(use: setCoordinates)
-                coordinates.get(use: getCoordinates)
+                car.delete(use: delete)
                 
                 let fuelLevel = car.grouped("fuel_level")
                 
@@ -45,26 +41,6 @@ extension Car {
         func getCar(req: Request) async throws -> Car {
             return try await .find(req.parameters.get("car_id"), on: req.db)
                 .unsafelyUnwrapped
-        }
-        
-        func getCoordinates(req: Request) async throws -> Coordinates {
-            return try await Car.find(req.parameters.get("car_id"), on: req.db)
-                .unsafelyUnwrapped
-                .coordinates
-                .unsafelyUnwrapped
-            
-        }
-        
-        func setCoordinates(req: Request) async throws -> HTTPStatus {
-            let coordinatesId = try req.content.decode(UUID.self)
-            
-            try await Car.find(req.parameters.get("car_id"), on: req.db)
-                .flatMap {
-                    $0.$coordinates.id = coordinatesId
-                    return $0.update(on: req.db)
-                }
-            
-            return .ok
         }
         
         func setFuelLevel(req: Request) async throws -> HTTPStatus {
