@@ -84,10 +84,10 @@ struct CarController: RouteCollection {
             .fuelLevel
     }
     
-    func delete(req: Request) throws -> EventLoopFuture<HTTPStatus> {
-        Client.find(req.parameters.get("car_id"), on: req.db)
-            .unwrap(or: Abort(.notFound))
+    func delete(req: Request) async throws -> HTTPStatus {
+        try await Car.find(req.parameters.get("car_id"), on: req.db)
             .flatMap { $0.delete(on: req.db)}
-            .transform(to: .ok)
+        
+        return .ok
     }
 }
