@@ -27,14 +27,14 @@ final class Owner: Model, Content {
     var phone: String
     
     @OptionalField(key: "profile_image_url")
-    var profileImageUrl: URL?
+    var profileImageUrl: String?
     
     @Field(key: "rating")
     var rating: Double
     
     required init() { }
     
-    init(id: Int? = nil, firstname: String, lastname: String, email: String? = nil, phone: String, profileImageUrl: URL? = nil, rating: Double) {
+    init(id: Int? = nil, firstname: String, lastname: String, email: String? = nil, phone: String, profileImageUrl: String? = nil, rating: Double) {
         self.id = id
         self.firstname = firstname
         self.lastname = lastname

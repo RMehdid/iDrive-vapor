@@ -27,17 +27,17 @@ final class Car: Model, Content {
     @Field(key: "fuel_level")
     var fuelLevel: Int
     
-    @Field(key: "engine_id")
-    var engine: Engine.IDValue
+    @Parent(key: "engine_id")
+    var engine: Engine
     
-    @OptionalField(key: "coordinates_id")
-    var coordinates: Coordinates.IDValue?
+    @OptionalParent(key: "coordinates_id")
+    var coordinates: Coordinates?
     
     @Field(key: "image_url")
-    var imageUrl: URL
+    var imageUrl: String
     
-    @Field(key: "owner_id")
-    var owner: Owner.IDValue
+    @Parent(key: "owner_id")
+    var owner: Owner
     
     @Enum(key: "status")
     var status: CarStatus
@@ -53,19 +53,35 @@ final class Car: Model, Content {
     
     init() { }
     
-    init(id: Int? = nil, make: String, model: String, year: Int, fuelLevel: Int, engineId: UUID, coordinatesId: UUID? = nil, imageUrl: URL, ownerId: Int, status: CarStatus, rating: Double, color: String, isFreeCancelation: Bool) {
+    init(id: Int? = nil, make: String, model: String, year: Int, fuelLevel: Int, engineId: UUID, coordinatesId: UUID? = nil, imageUrl: String, ownerId: Int, status: CarStatus, rating: Double, color: String, isFreeCancelation: Bool) {
         self.id = id
         self.make = make
         self.model = model
         self.year = year
         self.fuelLevel = fuelLevel
-        self.engine = engineId
-        self.coordinates = coordinatesId
+        self.$engine.id = engineId
+        self.$coordinates.id = coordinatesId
         self.imageUrl = imageUrl
-        self.owner = ownerId
+        self.$owner.id = ownerId
         self.status = status
         self.rating = rating
         self.color = color
         self.isFreeCancelation = isFreeCancelation
+    }
+    
+    init(dto: DTO) {
+        self.id = dto.id
+        self.make = dto.make
+        self.model = dto.model
+        self.year = dto.year
+        self.fuelLevel = dto.fuelLevel
+        self.$engine.id = dto.engineId
+        self.$coordinates.id = dto.coordinatesId
+        self.imageUrl = dto.imageUrl
+        self.$owner.id = dto.ownerId
+        self.status = dto.status
+        self.rating = dto.rating
+        self.color = dto.color
+        self.isFreeCancelation = dto.isFreeCancelation
     }
 }

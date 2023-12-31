@@ -27,43 +27,70 @@ extension Car {
         }
         
         func index(req: Request) async throws -> [Car] {
-            return try await Car.query(on: req.db).all()
+            return try await Car
+                .query(on: req.db)
+                .with(\.$engine)
+                .with(\.$coordinates)
+                .with(\.$owner)
+                .all()
         }
         
         func create(req: Request) async throws -> HTTPStatus {
-            try await req.content
-                .decode(Car.self)
+            let newCarDto = try req.content
+                .decode(Car.DTO.self)
+            
+            try await Car(dto: newCarDto)
                 .save(on: req.db)
             
             return .ok
         }
         
         func getCar(req: Request) async throws -> Car {
-            return try await .find(req.parameters.get("car_id"), on: req.db)
-                .unsafelyUnwrapped
+            guard let carId = Int(req.parameters.get("car_id") ?? "") else {
+                throw Abort(.notFound)
+            }
+            
+            guard let car = try await Car
+                .query(on: req.db)
+                .with(\.$engine)
+                .with(\.$coordinates)
+                .with(\.$owner)
+                .filter(\Car.$id == carId)
+                .first() else {
+                throw Abort(.notFound)
+            }
+            
+            return car
         }
         
         func setFuelLevel(req: Request) async throws -> HTTPStatus {
             let fuelLevel = try req.content.decode(Int.self)
             
-            try await Car.find(req.parameters.get("car_id"), on: req.db)
-                .flatMap {
-                    $0.fuelLevel = fuelLevel
-                    return $0.update(on: req.db)
-                }
+            guard let car = try await Car.find(req.parameters.get("car_id"), on: req.db) else {
+                return .notFound
+            }
+            
+            car.fuelLevel = fuelLevel
+            
+            try await car.update(on: req.db)
             
             return .ok
         }
         
         func getFuelLevel(req: Request) async throws -> Int {
-            return try await Car.find(req.parameters.get("car_id"), on: req.db)
-                .unsafelyUnwrapped
-                .fuelLevel
+            guard let car =  try await Car.find(req.parameters.get("car_id"), on: req.db) else {
+                throw Abort(.notFound)
+            }
+               
+            return car.fuelLevel
         }
         
         func delete(req: Request) async throws -> HTTPStatus {
-            try await Car.find(req.parameters.get("car_id"), on: req.db)
-                .flatMap { $0.delete(on: req.db)}
+            guard let car = try await Car.find(req.parameters.get("car_id"), on: req.db) else {
+                return .notFound
+            }
+            
+            try await car.delete(on: req.db)
             
             return .ok
         }
