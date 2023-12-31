@@ -8,8 +8,6 @@ func routes(_ app: Application) throws {
 
     app.get("hello") { req async -> String in
         "Hello, world!"
-        
-        
     }
     
     try app.register(collection: Client.Controller())
@@ -19,4 +17,5 @@ func routes(_ app: Application) throws {
     try app.register(collection: Coordinates.Controller())
     try app.register(collection: Package.Controller())
     try app.register(collection: Pricing.Controller())
+    try app.register(collection: RentalTransaction.Controller())
 }
