@@ -17,4 +17,6 @@ func routes(_ app: Application) throws {
     try app.register(collection: Car.Controller())
     try app.register(collection: Engine.Controller())
     try app.register(collection: Coordinates.Controller())
+    try app.register(collection: Package.Controller())
+    try app.register(collection: Pricing.Controller())
 }

@@ -22,6 +22,8 @@ public func configure(_ app: Application) async throws {
     app.migrations.add(Engine.Create())
     app.migrations.add(Coordinates.Create())
     app.migrations.add(Car.Create())
+    app.migrations.add(Package.Create())
+    app.migrations.add(Pricing.Create())
     
     try await app.autoMigrate().get()
 
