@@ -8,24 +8,24 @@
 import Fluent
 import Vapor
 
-final class Coordinates: Model, Content {
+final class Coordinates: Content {
     
-    static var schema: String = "coordinates"
-    
-    @ID(key: .id)
-    var id: UUID?
-    
-    @Field(key: "latitude")
     var latitude: Double
     
-    @Field(key: "longitude")
     var longitude: Double
     
-    init() { }
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.latitude = try container.decode(Double.self, forKey: .latitude)
+        self.longitude = try container.decode(Double.self, forKey: .longitude)
+    }
     
-    init(id: UUID? = nil, latitude: Double, longitude: Double) {
-        self.id = id
+    init(latitude: Double, longitude: Double) {
         self.latitude = latitude
         self.longitude = longitude
+    }
+    
+    enum CodingKeys: String, CodingKey {
+        case latitude, longitude
     }
 }

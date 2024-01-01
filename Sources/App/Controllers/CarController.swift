@@ -24,11 +24,6 @@ extension Car {
                 
                 fuelLevel.put(use: setFuelLevel)
                 fuelLevel.get(use: getFuelLevel)
-                
-                let coordinates = car.grouped("coordinates")
-                
-                coordinates.put(use: setCoordinatesCache)
-                coordinates.get(use: getCoordinatesCache)
             }
         }
         
@@ -36,7 +31,6 @@ extension Car {
             return try await Car
                 .query(on: req.db)
                 .with(\.$engine)
-                .with(\.$coordinates)
                 .with(\.$owner)
                 .all()
         }
@@ -59,7 +53,6 @@ extension Car {
             guard let car = try await Car
                 .query(on: req.db)
                 .with(\.$engine)
-                .with(\.$coordinates)
                 .with(\.$owner)
                 .filter(\Car.$id == carId)
                 .first() else {

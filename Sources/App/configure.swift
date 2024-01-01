@@ -20,7 +20,6 @@ public func configure(_ app: Application) async throws {
     app.migrations.add(Client.Create())
     app.migrations.add(Owner.Create())
     app.migrations.add(Engine.Create())
-    app.migrations.add(Coordinates.Create())
     app.migrations.add(Car.Create())
     app.migrations.add(Package.Create())
     app.migrations.add(Pricing.Create())

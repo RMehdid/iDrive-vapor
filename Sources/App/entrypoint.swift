@@ -10,7 +10,7 @@ enum Entrypoint {
         
         let app = Application(env)
         
-        app.redis.configuration = try RedisConfiguration(hostname: "localhost")
+        app.redis.configuration = try RedisConfiguration(hostname: "localhost", port: 6379)
         
         defer { app.shutdown() }
         

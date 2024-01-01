@@ -30,9 +30,6 @@ final class Car: Model, Content {
     @Parent(key: "engine_id")
     var engine: Engine
     
-    @OptionalParent(key: "coordinates_id")
-    var coordinates: Coordinates?
-    
     @Field(key: "image_url")
     var imageUrl: String
     
@@ -53,14 +50,13 @@ final class Car: Model, Content {
     
     init() { }
     
-    init(id: Int? = nil, make: String, model: String, year: Int, fuelLevel: Int, engineId: UUID, coordinatesId: UUID? = nil, imageUrl: String, ownerId: Int, status: CarStatus, rating: Double, color: String, isFreeCancelation: Bool) {
+    init(id: Int? = nil, make: String, model: String, year: Int, fuelLevel: Int, engineId: UUID, imageUrl: String, ownerId: Int, status: CarStatus, rating: Double, color: String, isFreeCancelation: Bool) {
         self.id = id
         self.make = make
         self.model = model
         self.year = year
         self.fuelLevel = fuelLevel
         self.$engine.id = engineId
-        self.$coordinates.id = coordinatesId
         self.imageUrl = imageUrl
         self.$owner.id = ownerId
         self.status = status
@@ -76,7 +72,6 @@ final class Car: Model, Content {
         self.year = dto.year
         self.fuelLevel = dto.fuelLevel
         self.$engine.id = dto.engineId
-        self.$coordinates.id = dto.coordinatesId
         self.imageUrl = dto.imageUrl
         self.$owner.id = dto.ownerId
         self.status = dto.status

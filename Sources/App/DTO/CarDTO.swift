@@ -22,8 +22,6 @@ extension Car {
         
         var engineId: UUID
         
-        var coordinatesId: UUID?
-        
         var imageUrl: String
         
         var ownerId: Int
