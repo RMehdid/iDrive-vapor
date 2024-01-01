@@ -19,11 +19,6 @@ extension Car {
             cars.group(":car_id") { car in
                 car.get(use: getCar)
                 car.delete(use: delete)
-                
-                let fuelLevel = car.grouped("fuel_level")
-                
-                fuelLevel.put(use: setFuelLevel)
-                fuelLevel.get(use: getFuelLevel)
             }
         }
         
@@ -45,7 +40,7 @@ extension Car {
             return .ok
         }
         
-        func getCar(req: Request) async throws -> Car {
+        func getCar(req: Request) async throws -> Car.Reponse {
             guard let carId = Int(req.parameters.get("car_id") ?? "") else {
                 throw Abort(.notFound)
             }
@@ -59,59 +54,15 @@ extension Car {
                 throw Abort(.notFound)
             }
             
-            return car
-        }
-        
-        func setFuelLevel(req: Request) async throws -> HTTPStatus {
-            let fuelLevel = try req.content.decode(Int.self)
+            var carResponse = Car.Reponse(car: car)
             
-            guard let car = try await Car.find(req.parameters.get("car_id"), on: req.db) else {
-                return .notFound
-            }
+            let fuelKey = RedisKey("car_\(carId)_fuel_level")
+            let coordinatesKey = RedisKey("car_\(carId)_coordinates")
             
-            car.fuelLevel = fuelLevel
+            carResponse.fuelLevel = try await req.redis.get(fuelKey, as: Int.self).get()
+            carResponse.coordinates = try await req.redis.get(coordinatesKey, asJSON: Coordinates.self)
             
-            try await car.update(on: req.db)
-            
-            return .ok
-        }
-        
-        func getFuelLevel(req: Request) async throws -> Int {
-            guard let car =  try await Car.find(req.parameters.get("car_id"), on: req.db) else {
-                throw Abort(.notFound)
-            }
-               
-            return car.fuelLevel
-        }
-        
-        func setCoordinatesCache(req: Request) async throws -> HTTPStatus {
-            
-            guard let carId = req.parameters.get("car_id") else {
-                throw Abort(.notFound, reason: "no car to set coordinates to")
-            }
-            
-            let coordinates = try req.content.decode(Coordinates.self)
-            
-            let carCoordinatesKey = RedisKey(carId + "/coordinates")
-            
-            try await req.redis.set(carCoordinatesKey, toJSON: coordinates)
-            
-            return .ok
-        }
-        
-        func getCoordinatesCache(req: Request) async throws -> Coordinates {
-            
-            guard let carId = req.parameters.get("car_id") else {
-                throw Abort(.notFound, reason: "no car to get coordinates of")
-            }
-            
-            let carCoodinatesKey = RedisKey(carId + "/coordinates")
-            
-            guard let coordinates = try await req.redis.get(carCoodinatesKey, asJSON: Coordinates.self) else {
-                throw Abort(.notFound, reason: "no coordinates found")
-            }
-            
-            return coordinates
+            return carResponse
         }
         
         func delete(req: Request) async throws -> HTTPStatus {

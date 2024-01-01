@@ -24,9 +24,6 @@ final class Car: Model, Content {
     @Field(key: "year")
     var year: Int
     
-    @Field(key: "fuel_level")
-    var fuelLevel: Int
-    
     @Parent(key: "engine_id")
     var engine: Engine
     
@@ -50,12 +47,11 @@ final class Car: Model, Content {
     
     init() { }
     
-    init(id: Int? = nil, make: String, model: String, year: Int, fuelLevel: Int, engineId: UUID, imageUrl: String, ownerId: Int, status: CarStatus, rating: Double, color: String, isFreeCancelation: Bool) {
+    init(id: Int? = nil, make: String, model: String, year: Int, engineId: UUID, imageUrl: String, ownerId: Int, status: CarStatus, rating: Double, color: String, isFreeCancelation: Bool) {
         self.id = id
         self.make = make
         self.model = model
         self.year = year
-        self.fuelLevel = fuelLevel
         self.$engine.id = engineId
         self.imageUrl = imageUrl
         self.$owner.id = ownerId
@@ -70,7 +66,6 @@ final class Car: Model, Content {
         self.make = dto.make
         self.model = dto.model
         self.year = dto.year
-        self.fuelLevel = dto.fuelLevel
         self.$engine.id = dto.engineId
         self.imageUrl = dto.imageUrl
         self.$owner.id = dto.ownerId
