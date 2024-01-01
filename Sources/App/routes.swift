@@ -1,13 +1,14 @@
 import Fluent
 import Vapor
+import Redis
 
 func routes(_ app: Application) throws {
     app.get { req async in
         "It works!"
     }
 
-    app.get("hello") { req async -> String in
-        "Hello, world!"
+    app.get("hello") { req async throws -> String in
+        return try await req.redis.ping().get()
     }
     
     try app.register(collection: Client.Controller())

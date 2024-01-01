@@ -7,6 +7,7 @@
 
 import Fluent
 import Vapor
+import Redis
 
 extension Car {
     struct Controller: RouteCollection {
@@ -23,6 +24,11 @@ extension Car {
                 
                 fuelLevel.put(use: setFuelLevel)
                 fuelLevel.get(use: getFuelLevel)
+                
+                let coordinates = car.grouped("coordinates")
+                
+                coordinates.put(use: setCoordinatesCache)
+                coordinates.get(use: getCoordinatesCache)
             }
         }
         
@@ -83,6 +89,36 @@ extension Car {
             }
                
             return car.fuelLevel
+        }
+        
+        func setCoordinatesCache(req: Request) async throws -> HTTPStatus {
+            
+            guard let carId = req.parameters.get("car_id") else {
+                throw Abort(.notFound, reason: "no car to set coordinates to")
+            }
+            
+            let coordinates = try req.content.decode(Coordinates.self)
+            
+            let carCoordinatesKey = RedisKey(carId + "/coordinates")
+            
+            try await req.redis.set(carCoordinatesKey, toJSON: coordinates)
+            
+            return .ok
+        }
+        
+        func getCoordinatesCache(req: Request) async throws -> Coordinates {
+            
+            guard let carId = req.parameters.get("car_id") else {
+                throw Abort(.notFound, reason: "no car to get coordinates of")
+            }
+            
+            let carCoodinatesKey = RedisKey(carId + "/coordinates")
+            
+            guard let coordinates = try await req.redis.get(carCoodinatesKey, asJSON: Coordinates.self) else {
+                throw Abort(.notFound, reason: "no coordinates found")
+            }
+            
+            return coordinates
         }
         
         func delete(req: Request) async throws -> HTTPStatus {

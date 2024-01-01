@@ -1,4 +1,5 @@
 import Vapor
+import Redis
 import Logging
 
 @main
@@ -8,6 +9,9 @@ enum Entrypoint {
         try LoggingSystem.bootstrap(from: &env)
         
         let app = Application(env)
+        
+        app.redis.configuration = try RedisConfiguration(hostname: "localhost")
+        
         defer { app.shutdown() }
         
         do {
