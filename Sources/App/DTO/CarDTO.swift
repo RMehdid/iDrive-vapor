@@ -88,6 +88,7 @@ extension Car {
         var color: String
         var imageUrl: String
         var year: Int
+        var rating: Double
         
         init(car: Car) {
             self.id = car.id
@@ -95,6 +96,7 @@ extension Car {
             self.color = car.color
             self.imageUrl = car.imageUrl
             self.year = car.year
+            self.rating = car.rating
         }
     }
 }

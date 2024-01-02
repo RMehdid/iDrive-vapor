@@ -41,6 +41,7 @@ extension Car {
                     .field(\.$color)
                     .field(\.$model)
                     .field(\.$year)
+                    .field(\.$rating)
                     .field(\.$imageUrl)
                     .all()
                 
@@ -53,6 +54,7 @@ extension Car {
                     .field(\.$color)
                     .field(\.$model)
                     .field(\.$year)
+                    .field(\.$rating)
                     .field(\.$imageUrl)
                     .all()
                 
