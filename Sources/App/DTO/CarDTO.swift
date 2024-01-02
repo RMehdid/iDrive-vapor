@@ -87,12 +87,14 @@ extension Car {
         var model: String
         var color: String
         var imageUrl: String
+        var year: Int
         
         init(car: Car) {
             self.id = car.id
             self.model = car.model
             self.color = car.color
             self.imageUrl = car.imageUrl
+            self.year = car.year
         }
     }
 }
