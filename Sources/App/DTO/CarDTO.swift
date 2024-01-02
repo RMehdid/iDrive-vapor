@@ -80,3 +80,19 @@ extension Car {
         }
     }
 }
+
+extension Car {
+    struct Simple: Content {
+        var id: Int?
+        var model: String
+        var color: String
+        var imageUrl: String
+        
+        init(car: Car) {
+            self.id = car.id
+            self.model = car.model
+            self.color = car.color
+            self.imageUrl = car.imageUrl
+        }
+    }
+}

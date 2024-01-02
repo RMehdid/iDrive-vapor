@@ -24,12 +24,38 @@ extension Car {
             }
         }
         
-        func index(req: Request) async throws -> [Car] {
-            return try await Car
-                .query(on: req.db)
-                .with(\.$engine)
-                .with(\.$owner)
-                .all()
+        func index(req: Request) async throws -> [Car.Simple] {
+            if let searchText = try? req.query.get(String.self, at: "query") {
+                print("searching cars for \(searchText)")
+                let cars = try await Car
+                    .query(on: req.db)
+                    .group(.or) { group in
+                        group.filter(\Car.$make ~~ searchText)
+                        group.filter(\Car.$model ~~ searchText)
+                        
+                        if let searchNumber = Int(searchText) {
+                            group.filter(\Car.$year == searchNumber)
+                        }
+                    }
+                    .field(\.$id)
+                    .field(\.$color)
+                    .field(\.$model)
+                    .field(\.$imageUrl)
+                    .all()
+                
+                return cars.map { Car.Simple(car: $0) }
+            } else {
+                print("getting all cars")
+                let cars = try await Car
+                    .query(on: req.db)
+                    .field(\.$id)
+                    .field(\.$color)
+                    .field(\.$model)
+                    .field(\.$imageUrl)
+                    .all()
+                
+                return cars.map { Car.Simple(car: $0) }
+            }
         }
         
         func create(req: Request) async throws -> HTTPStatus {
