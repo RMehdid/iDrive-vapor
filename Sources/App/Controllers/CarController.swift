@@ -14,7 +14,9 @@ extension Car {
         func boot(routes: RoutesBuilder) throws {
             let cars = routes.grouped("cars")
             cars.get(use: index)
-            cars.post(use: create)
+            
+            let creat = cars.grouped("create")
+            creat.post(use: create)
             
             cars.group(":car_id") { car in
                 car.get(use: getCar)
