@@ -72,7 +72,7 @@ extension Car {
             return .ok
         }
         
-        func getCar(req: Request) async throws -> Car.Reponse {
+        func getCar(req: Request) async throws -> Car.Response {
             guard let carId = Int(req.parameters.get("car_id") ?? "") else {
                 throw Abort(.notFound)
             }
@@ -86,7 +86,16 @@ extension Car {
                 throw Abort(.notFound)
             }
             
-            var carResponse = Car.Reponse(car: car)
+            let pricings = try await Pricing
+                .query(on: req.db)
+                .filter(\Pricing.$car.$id == carId)
+                .all()
+            
+            let packages = pricings.map {
+                Package.Response($0)
+            }
+            
+            var carResponse = Car.Response(car: car, packages: packages)
             
             let fuelKey = RedisKey("car_\(carId)_fuel_level")
             let coordinatesKey = RedisKey("car_\(carId)_coordinates")

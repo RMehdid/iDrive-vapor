@@ -36,10 +36,4 @@ final class Package: Model, Content {
         self.initialPeriod = initialPeriod
         self.initialDistance = initialDistance
     }
-    
-    enum CodingKeys: String, CodingKey {
-        case id, name, description
-        case initialPeriod = "initial_period"
-        case initial_distance = "initial_distance"
-    }
 }

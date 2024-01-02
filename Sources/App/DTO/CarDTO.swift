@@ -35,7 +35,7 @@ extension Car {
 }
 
 extension Car {
-    struct Reponse: Content {
+    struct Response: Content {
         
         var id: Int?
         
@@ -63,7 +63,9 @@ extension Car {
         
         var isFreeCancelation: Bool
         
-        init(car: Car, fuelLevel: Int? = nil, coordinates: Coordinates? = nil) {
+        var packages: [Package.Response]
+        
+        init(car: Car, fuelLevel: Int? = nil, coordinates: Coordinates? = nil, packages: [Package.Response]) {
             self.id = car.id
             self.make = car.make
             self.model = car.model
@@ -77,6 +79,7 @@ extension Car {
             self.rating = car.rating
             self.color = car.color
             self.isFreeCancelation = car.isFreeCancelation
+            self.packages = packages
         }
     }
 }
