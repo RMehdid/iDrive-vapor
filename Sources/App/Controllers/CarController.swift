@@ -91,6 +91,7 @@ extension Car {
                 .with(\.$car)
                 .with(\.$package)
                 .filter(\Pricing.$car.$id == carId)
+                .sort(\.$initialPrice)
                 .all()
                 .map { pricing in
                     Package.Response(pricing)
