@@ -86,14 +86,15 @@ extension Car {
                 throw Abort(.notFound)
             }
             
-            let pricings = try await Pricing
+            let packages = try await Pricing
                 .query(on: req.db)
+                .with(\.$car)
+                .with(\.$package)
                 .filter(\Pricing.$car.$id == carId)
                 .all()
-            
-            let packages = pricings.map {
-                Package.Response($0)
-            }
+                .map { pricing in
+                    Package.Response(pricing)
+                }
             
             var carResponse = Car.Response(car: car, packages: packages)
             

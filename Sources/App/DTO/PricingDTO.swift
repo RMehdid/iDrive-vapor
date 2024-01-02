@@ -32,7 +32,6 @@ extension Pricing {
             self.initialPrice = pricing.initialPrice
             self.pricePerExtraHour = pricing.pricePerExtraHour
             self.pricePerExtraKm = pricing.pricePerExtraKm
-            
         }
     }
 }
