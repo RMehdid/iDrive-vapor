@@ -11,7 +11,7 @@ import Vapor
 extension Client {
     struct Controller: RouteCollection {
         func boot(routes: RoutesBuilder) throws {
-            let clients = routes.grouped("clients")
+            let clients = routes.grouped("clients").grouped(ClientAuthenticator())
             clients.get(use: index)
             clients.post(use: create)
             clients.put(use: update)
