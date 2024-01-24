@@ -99,11 +99,11 @@ extension Car {
             
             var carResponse = Car.Response(car: car, packages: packages)
             
-            let fuelKey = RedisKey("car_\(carId)_fuel_level")
-            let coordinatesKey = RedisKey("car_\(carId)_coordinates")
-            
-            carResponse.fuelLevel = try await req.redis.get(fuelKey, as: Int.self).get()
-            carResponse.coordinates = try await req.redis.get(coordinatesKey, asJSON: Coordinates.self)
+//            let fuelKey = RedisKey("car_\(carId)_fuel_level")
+//            let coordinatesKey = RedisKey("car_\(carId)_coordinates")
+//            
+//            carResponse.fuelLevel = try await req.redis.get(fuelKey, as: Int.self).get()
+//            carResponse.coordinates = try await req.redis.get(coordinatesKey, asJSON: Coordinates.self)
             
             return carResponse
         }

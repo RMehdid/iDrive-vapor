@@ -12,6 +12,9 @@ enum Entrypoint {
         
         app.redis.configuration = try RedisConfiguration(hostname: "localhost", port: 6379)
         
+        app.http.server.configuration.hostname = "0.0.0.0"
+        app.http.server.configuration.port = 8000
+        
         defer { app.shutdown() }
         
         do {
