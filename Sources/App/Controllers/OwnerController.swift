@@ -16,6 +16,12 @@ extension Owner {
             owners.post(use: create)
             owners.put(use: update)
             
+            owners.post("login") { req -> TokenReponse in
+                let user = try req.auth.require(Owner.self)
+                let payload = try SessionToken(userId: user.requireID())
+                return TokenReponse(token: try req.jwt.sign(payload))
+            }
+            
             owners.group(":owner_id") { owner in
                 owner.delete(use: delete)
             }

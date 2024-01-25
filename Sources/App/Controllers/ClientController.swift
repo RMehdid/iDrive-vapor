@@ -16,9 +16,24 @@ extension Client {
             clients.post(use: create)
             clients.put(use: update)
             
+            clients.group("me") { me in
+                let securedMe = me.grouped(SessionToken.authenticator(), SessionToken.guardMiddleware())
+                securedMe.get(use: getMe)
+            }
+            
             clients.group(":client_id") { client in
                 client.delete(use: delete)
             }
+        }
+        
+        func getMe(req: Request) async throws -> Client {
+            let payload = try req.jwt.verify(as: SessionToken.self)
+            
+            guard let client = try await Client.find(payload.userId, on: req.db) else {
+                throw Abort(.badRequest)
+            }
+            
+            return client
         }
         
         func index(req: Request) async throws -> [Client] {

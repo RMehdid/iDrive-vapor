@@ -32,7 +32,7 @@ final class Client: Model, Content {
     @Field(key: "rating")
     var rating: Double
     
-    required init() { }
+    init() { }
     
     init(id: Int? = nil, firstname: String, lastname: String, email: String? = nil, phone: String, profileImageUrl: String? = nil, rating: Double) {
         self.id = id

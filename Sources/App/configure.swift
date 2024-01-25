@@ -26,6 +26,8 @@ public func configure(_ app: Application) async throws {
     app.migrations.add(RentalTransaction.Create())
     
     try await app.autoMigrate().get()
+    
+    app.jwt.signers.use(.hs256(key: "secret"))
 
     // register routes
     try routes(app)
