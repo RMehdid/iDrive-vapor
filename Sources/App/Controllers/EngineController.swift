@@ -21,12 +21,12 @@ extension Engine {
             }
         }
         
-        func create(req: Request) async throws -> HTTPStatus {
-            try await req.content
-                .decode(Engine.self)
-                .save(on: req.db)
+        func create(req: Request) async throws -> Engine {
+            let engine = try req.content.decode(Engine.self)
             
-            return .ok
+            try await engine.save(on: req.db)
+            
+            return engine
         }
         
         func getEngine(req: Request) async throws -> Engine {
