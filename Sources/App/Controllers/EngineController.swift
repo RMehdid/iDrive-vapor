@@ -30,8 +30,11 @@ extension Engine {
         }
         
         func getEngine(req: Request) async throws -> Engine {
-            return try await Engine.find(req.parameters.get("engine_id"), on: req.db)
-                .unsafelyUnwrapped
+            guard let engine = try await Engine.find(req.parameters.get("engine_id"), on: req.db) else {
+                throw Abort(.notFound)
+            }
+            
+            return engine
         }
         
         func update(req: Request) async throws -> HTTPStatus {
@@ -42,15 +45,18 @@ extension Engine {
                     $0.type = engine.type
                     $0.transmission = engine.transmission
                     $0.horsePower = engine.horsePower
-                    return $0.update(on: req.db)
+                    $0.update(on: req.db)
                 }
             
             return .ok
         }
         
         func delete(req: Request) async throws -> HTTPStatus {
-            try await Engine.find(req.parameters.get("engine_id"), on: req.db)
-                .flatMap { $0.delete(on: req.db)}
+            guard let engine = try await Engine.find(req.parameters.get("engine_id"), on: req.db) else {
+                throw Abort(.notFound)
+            }
+            
+            try await engine.delete(on: req.db)
             
             return .ok
         }
