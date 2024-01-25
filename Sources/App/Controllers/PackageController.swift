@@ -12,11 +12,13 @@ extension Package {
     struct Controller: RouteCollection {
         func boot(routes: RoutesBuilder) throws {
             let packages = routes.grouped("packages")
-            packages.get(use: index)
-            packages.post(use: create)
-            packages.put(use: update)
+            let adminSecured = packages.grouped(AdminToken.asyncAuthenticator(), AdminToken.guardMiddleware())
             
-            packages.group(":package_id") { package in
+            adminSecured.get(use: index)
+            adminSecured.post(use: create)
+            adminSecured.put(use: update)
+            
+            adminSecured.group(":package_id") { package in
                 package.delete(use: delete)
             }
         }
