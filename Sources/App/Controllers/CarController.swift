@@ -62,14 +62,28 @@ extension Car {
             }
         }
         
-        func create(req: Request) async throws -> HTTPStatus {
+        func create(req: Request) async throws -> Car {
             let newCarDto = try req.content
                 .decode(Car.DTO.self)
             
-            try await Car(dto: newCarDto)
-                .save(on: req.db)
+            let car = Car(dto: newCarDto)
             
-            return .ok
+            try await car.save(on: req.db)
+            
+            guard let carId = car.id else {
+                throw Abort(.internalServerError)
+            }
+            
+            guard let car = try await Car
+                .query(on: req.db)
+                .with(\.$engine)
+                .with(\.$owner)
+                .filter(\Car.$id == carId)
+                .first() else {
+                throw Abort(.notFound)
+            }
+            
+            return car
         }
         
         func getCar(req: Request) async throws -> Car.Response {
