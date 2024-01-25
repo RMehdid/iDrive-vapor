@@ -8,7 +8,7 @@
 import Fluent
 import Vapor
 
-final class Client: Model, Content, Authenticatable {
+final class Client: Model, Content {
     static let schema: String = "clients"
     
     @ID(custom: .id, generatedBy: .user)
@@ -32,7 +32,7 @@ final class Client: Model, Content, Authenticatable {
     @Field(key: "rating")
     var rating: Double
     
-    required init() { }
+    init() { }
     
     init(id: Int? = nil, firstname: String, lastname: String, email: String? = nil, phone: String, profileImageUrl: String? = nil, rating: Double) {
         self.id = id
@@ -42,15 +42,5 @@ final class Client: Model, Content, Authenticatable {
         self.phone = phone
         self.profileImageUrl = profileImageUrl
         self.rating = rating
-    }
-}
-
-final class LoginCredentials: Authenticatable, Decodable {
-    let id: Int
-    let phone: String
-    
-    init(id: Int, phone: String) {
-        self.id = id
-        self.phone = phone
     }
 }

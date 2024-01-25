@@ -24,7 +24,7 @@ struct SessionToken: Content, Authenticatable, JWTPayload {
     }
 
     func verify(using signer: JWTSigner) throws {
-        try expiration.verifyNotExpired()
+        try self.expiration.verifyNotExpired()
     }
 }
 
