@@ -12,10 +12,12 @@ extension Pricing {
     struct Controller: RouteCollection {
         func boot(routes: RoutesBuilder) throws {
             let pricings = routes.grouped("pricings")
-            pricings.post(use: create)
-            pricings.put(use: update)
+            let userSecured = pricings.grouped(SessionToken.asyncAuthenticator(), SessionToken.guardMiddleware())
             
-            pricings.group(":car_id") { car in
+            userSecured.post(use: create)
+            userSecured.put(use: update)
+            
+            userSecured.group(":car_id") { car in
                 car.get(use: getCarPackagesPricings)
             }
         }
