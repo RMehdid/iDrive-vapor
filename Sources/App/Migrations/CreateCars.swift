@@ -32,4 +32,3 @@ extension Car {
         }
     }
 }
-
