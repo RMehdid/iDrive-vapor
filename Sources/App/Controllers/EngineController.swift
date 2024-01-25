@@ -12,11 +12,17 @@ extension Engine {
     struct Controller: RouteCollection {
         func boot(routes: RoutesBuilder) throws {
             let engines = routes.grouped("engines")
-            engines.post(use: create)
-            engines.put(use: update)
+            let userSecured = engines.grouped(SessionToken.asyncAuthenticator(), SessionToken.guardMiddleware())
+            let adminSecured = engines.grouped(AdminToken.asyncAuthenticator(), AdminToken.guardMiddleware())
             
-            engines.group(":engine_id") { engine in
+            userSecured.group(":engine_id") { engine in
                 engine.get(use: getEngine)
+            }
+            
+            adminSecured.post(use: create)
+            adminSecured.put(use: update)
+            
+            adminSecured.group(":engine_id") { engine in
                 engine.delete(use: delete)
             }
         }
