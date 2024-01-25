@@ -17,13 +17,46 @@ extension Car {
             
             secured.get(use: index)
             
+            secured.group("favorites") { favorites in
+                favorites.get(use: getFavoriteCars)
+            }
+            
             let creat = secured.grouped("create")
             creat.post(use: create)
             
             secured.group(":car_id") { car in
                 car.get(use: getCar)
                 car.delete(use: delete)
+                
+                car.group("favorites") { favorites in
+                    favorites.put(use: setFavoriteCar)
+                }
             }
+        }
+        
+        func getFavoriteCars(req: Request) async throws -> [Car.Simple] {
+            let clientId = try req.jwt.verify(as: SessionToken.self).userId
+            
+            return try await ClientsFavoriteCars
+                .query(on: req.db)
+                .with(\.$car)
+                .filter(\ClientsFavoriteCars.$client.$id == clientId)
+                .all()
+                .compactMap {
+                    Car.Simple(car: $0.car)
+                }
+        }
+        
+        func setFavoriteCar(req: Request) async throws -> HTTPStatus {
+            let clientId = try req.jwt.verify(as: SessionToken.self).userId
+            
+            guard var carId = req.parameters.get("car_id"), var carId = Int(carId) else {
+                throw Abort(.badRequest)
+            }
+            
+            try await ClientsFavoriteCars(clientId: clientId, carId: carId).save(on: req.db)
+                
+            return .ok
         }
         
         func index(req: Request) async throws -> [Car.Simple] {
@@ -115,11 +148,11 @@ extension Car {
             
             var carResponse = Car.Response(car: car, packages: packages)
             
-//            let fuelKey = RedisKey("car_\(carId)_fuel_level")
-//            let coordinatesKey = RedisKey("car_\(carId)_coordinates")
-//            
-//            carResponse.fuelLevel = try await req.redis.get(fuelKey, as: Int.self).get()
-//            carResponse.coordinates = try await req.redis.get(coordinatesKey, asJSON: Coordinates.self)
+            let fuelKey = RedisKey("car_\(carId)_fuel_level")
+            let coordinatesKey = RedisKey("car_\(carId)_coordinates")
+            
+            carResponse.fuelLevel = try await req.redis.get(fuelKey, as: Int.self).get()
+            carResponse.coordinates = try await req.redis.get(coordinatesKey, asJSON: Coordinates.self)
             
             return carResponse
         }

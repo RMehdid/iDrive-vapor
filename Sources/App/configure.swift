@@ -25,6 +25,7 @@ public func configure(_ app: Application) async throws {
     app.migrations.add(Package.Create())
     app.migrations.add(Pricing.Create())
     app.migrations.add(RentalTransaction.Create())
+    app.migrations.add(ClientsFavoriteCars.Create())
     
     try await app.autoMigrate().get()
     
