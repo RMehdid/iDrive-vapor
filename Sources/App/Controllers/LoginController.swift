@@ -13,28 +13,46 @@ extension LoginCredentials {
         func boot(routes: RoutesBuilder) throws {
             let loginRoute = routes.grouped("login")
             
-            loginRoute.post(use: login)
+            loginRoute.group(":type") { user in
+                user.post(use: login)
+            }
             
         }
         
         func login(req: Request) async throws -> TokenReponse {
             let userCredentials = try req.content.decode(LoginCredentials.self)
             
-            if let client = try await Client.find(userCredentials.id, on: req.db) {
+            guard let type = req.parameters.get("type"), let userType = UserType(rawValue: type) else {
+                throw Abort(.custom(code: 400, reasonPhrase: "user type missing"))
+            }
+            
+            switch userType {
+            case .client:
+                guard let client = try await Client.find(userCredentials.id, on: req.db) else {
+                    throw Abort(.custom(code: 400, reasonPhrase: "client not found"))
+                }
                 guard client.phone == userCredentials.phone else {
                     throw Abort(.custom(code: 401, reasonPhrase: "phone number missmatch"))
                 }
+            case .owner:
+                guard let owner = try await Owner.find(userCredentials.id, on: req.db) else {
+                    throw Abort(.custom(code: 400, reasonPhrase: "owner not found"))
+                }
                 
-            } else if let owner = try await Owner.find(userCredentials.id, on: req.db) {
                 guard owner.phone == userCredentials.phone else {
                     throw Abort(.custom(code: 401, reasonPhrase: "phone number missmatch"))
                 }
+            case .admin:
+                guard let admin = try await Owner.find(userCredentials.id, on: req.db) else {
+                    throw Abort(.custom(code: 400, reasonPhrase: "owner not found"))
+                }
                 
-            } else {
-                throw Abort(.custom(code: 400, reasonPhrase: "user not found"))
+                guard admin.phone == userCredentials.phone else {
+                    throw Abort(.custom(code: 401, reasonPhrase: "phone number missmatch"))
+                }
             }
             
-            let payload = SessionToken(userId: userCredentials.id)
+            let payload = SessionToken(userId: userCredentials.id, userType: userType)
             
             return TokenReponse(token: try req.jwt.sign(payload))
         }

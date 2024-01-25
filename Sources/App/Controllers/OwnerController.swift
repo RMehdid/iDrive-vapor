@@ -12,19 +12,29 @@ extension Owner {
     struct Controller: RouteCollection {
         func boot(routes: RoutesBuilder) throws {
             let owners = routes.grouped("owners")
-            owners.get(use: index)
-            owners.post(use: create)
-            owners.put(use: update)
+            let secured = owners.grouped(SessionToken.asyncAuthenticator(), SessionToken.guardMiddleware())
             
-            owners.post("login") { req -> TokenReponse in
-                let user = try req.auth.require(Owner.self)
-                let payload = try SessionToken(userId: user.requireID())
-                return TokenReponse(token: try req.jwt.sign(payload))
+            secured.get(use: index)
+            owners.post(use: create)
+            secured.put(use: update)
+            
+            secured.group("me") { me in
+                me.get(use: getMe)
             }
             
-            owners.group(":owner_id") { owner in
+            secured.group(":owner_id") { owner in
                 owner.delete(use: delete)
             }
+        }
+        
+        func getMe(req: Request) async throws -> Owner {
+            let payload = try req.jwt.verify(as: SessionToken.self)
+            
+            guard let owner = try await Owner.find(payload.userId, on: req.db) else {
+                throw Abort(.badRequest)
+            }
+            
+            return owner
         }
         
         func index(req: Request) async throws -> [Owner] {
@@ -55,8 +65,8 @@ extension Owner {
         }
         
         func delete(req: Request) async throws -> HTTPStatus {
-            try await Owner.find(req.parameters.get("owner_id"), on: req.db)
-                .flatMap { $0.delete(on: req.db) }
+            try await Owner.find(req.parameters.get("owner_id"), on: req.db)?
+                .delete(on: req.db)
             
             return .ok
         }

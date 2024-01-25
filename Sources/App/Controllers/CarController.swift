@@ -13,6 +13,8 @@ extension Car {
     struct Controller: RouteCollection {
         func boot(routes: RoutesBuilder) throws {
             let cars = routes.grouped("cars")
+            let secured = cars.grouped(SessionToken.asyncAuthenticator(), SessionToken.guardMiddleware())
+            
             cars.get(use: index)
             
             let creat = cars.grouped("create")

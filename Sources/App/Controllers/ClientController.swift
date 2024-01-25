@@ -12,16 +12,16 @@ extension Client {
     struct Controller: RouteCollection {
         func boot(routes: RoutesBuilder) throws {
             let clients = routes.grouped("clients")
-            clients.get(use: index)
+            let secured = clients.grouped(SessionToken.asyncAuthenticator(), SessionToken.guardMiddleware())
+            secured.get(use: index)
             clients.post(use: create)
-            clients.put(use: update)
+            secured.put(use: update)
             
-            clients.group("me") { me in
-                let securedMe = me.grouped(SessionToken.authenticator(), SessionToken.guardMiddleware())
-                securedMe.get(use: getMe)
+            secured.group("me") { me in
+                me.get(use: getMe)
             }
             
-            clients.group(":client_id") { client in
+            secured.group(":client_id") { client in
                 client.delete(use: delete)
             }
         }
