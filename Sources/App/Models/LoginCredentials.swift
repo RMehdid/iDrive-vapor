@@ -11,3 +11,8 @@ struct LoginCredentials: Authenticatable, Decodable {
     let id: Int
     let phone: String
 }
+
+struct AdminCredentials: Authenticatable, Decodable {
+    let username: String
+    let password: String
+}

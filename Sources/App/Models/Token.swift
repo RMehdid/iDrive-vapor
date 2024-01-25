@@ -12,7 +12,6 @@ import JWT
 enum UserType: String, Codable {
     case client
     case owner
-    case admin
 }
 
 struct SessionToken: Content, Authenticatable, JWTPayload {
@@ -29,6 +28,25 @@ struct SessionToken: Content, Authenticatable, JWTPayload {
         self.userId = userId
         self.expiration = ExpirationClaim(value: Date().addingTimeInterval(expirationTime))
         self.userType = userType
+    }
+
+    func verify(using signer: JWTSigner) throws {
+        try self.expiration.verifyNotExpired()
+    }
+}
+
+struct AdminToken: Content, Authenticatable, JWTPayload {
+
+    // Constants
+    let expirationTime: TimeInterval = .infinity
+
+    // Token Data
+    var expiration: ExpirationClaim
+    var adminUsername: String
+
+    init(username: String) {
+        self.adminUsername = username
+        self.expiration = ExpirationClaim(value: Date().addingTimeInterval(expirationTime))
     }
 
     func verify(using signer: JWTSigner) throws {

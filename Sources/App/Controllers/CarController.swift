@@ -15,12 +15,12 @@ extension Car {
             let cars = routes.grouped("cars")
             let secured = cars.grouped(SessionToken.asyncAuthenticator(), SessionToken.guardMiddleware())
             
-            cars.get(use: index)
+            secured.get(use: index)
             
-            let creat = cars.grouped("create")
+            let creat = secured.grouped("create")
             creat.post(use: create)
             
-            cars.group(":car_id") { car in
+            secured.group(":car_id") { car in
                 car.get(use: getCar)
                 car.delete(use: delete)
             }

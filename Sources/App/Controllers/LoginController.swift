@@ -42,17 +42,27 @@ extension LoginCredentials {
                 guard owner.phone == userCredentials.phone else {
                     throw Abort(.custom(code: 401, reasonPhrase: "phone number missmatch"))
                 }
-            case .admin:
-                guard let admin = try await Owner.find(userCredentials.id, on: req.db) else {
-                    throw Abort(.custom(code: 400, reasonPhrase: "owner not found"))
-                }
-                
-                guard admin.phone == userCredentials.phone else {
-                    throw Abort(.custom(code: 401, reasonPhrase: "phone number missmatch"))
-                }
             }
             
             let payload = SessionToken(userId: userCredentials.id, userType: userType)
+            
+            return TokenReponse(token: try req.jwt.sign(payload))
+        }
+        
+        func loginAdmin(req: Request) async throws -> TokenReponse {
+            let adminCredentials = try req.content.decode(AdminCredentials.self)
+            
+            guard let admin = try await Admin.query(on: req.db)
+                .filter(\.$username == adminCredentials.username)
+                .first() else {
+                throw Abort(.unauthorized, reason: "username not found")
+            }
+            
+            guard try Bcrypt.verify(adminCredentials.password, created: admin.passwordHash) else {
+                throw Abort(.unauthorized, reason: "Invalid credentials")
+            }
+            
+            let payload = AdminToken(username: admin.username)
             
             return TokenReponse(token: try req.jwt.sign(payload))
         }
