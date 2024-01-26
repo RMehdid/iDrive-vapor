@@ -13,7 +13,7 @@ func routes(_ app: Application) throws {
     
     app.middleware.use(LogMiddleware())
     
-    try app.register(collection: LoginCredentials.Controller())
+    try app.register(collection: LoginController())
     try app.register(collection: Client.Controller())
     try app.register(collection: Owner.Controller())
     try app.register(collection: Car.Controller())

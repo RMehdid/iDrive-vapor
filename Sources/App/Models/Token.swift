@@ -54,6 +54,24 @@ struct AdminToken: Content, Authenticatable, JWTPayload {
     }
 }
 
+struct CarToken: Content, Authenticatable, JWTPayload {
+    
+    let expirationTime: TimeInterval = .infinity
+
+    // Token Data
+    var expiration: ExpirationClaim
+    var carId: Int
+
+    init(_ id: Int) {
+        self.carId = id
+        self.expiration = ExpirationClaim(value: Date().addingTimeInterval(expirationTime))
+    }
+
+    func verify(using signer: JWTSigner) throws {
+        try self.expiration.verifyNotExpired()
+    }
+}
+
 struct TokenReponse: Content {
     var token: String
 }

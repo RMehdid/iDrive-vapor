@@ -7,7 +7,7 @@
 
 import Fluent
 import Vapor
-import Redis
+import RediStack
 
 extension Car {
     struct Controller: RouteCollection {
@@ -46,6 +46,39 @@ extension Car {
                     Car.Simple(car: $0.car)
                 }
         }
+        
+//        func getNearbyCars(req: Request) async throws -> [Car.Simple] {
+//            let coordinates = try req.content.decode(Coordinates.self)
+//            let clientId = try req.jwt.verify(as: SessionToken.self).userId
+//            
+//            var redis = try req.redis.pool.requestConnection()
+//
+//                // Step 3: Query Nearby Car IDs from Redis
+//                let nearbyCarKeys: [String] = try await redis.georadiusbymember(
+//                    in: "car_coordinates",
+//                    member: "client_\(clientId)",
+//                    radius: 1_000,
+//                    unit: .meters
+//                )
+//
+//                // Step 4: Extract Car IDs from Redis Keys
+//                let nearbyCarIDs = nearbyCarKeys.compactMap { key in
+//                    guard let carIDString = key.split(separator: "_").dropFirst().first,
+//                          let carID = Int(carIDString) else {
+//                        return nil
+//                    }
+//                    return carID
+//                }
+//
+//                // Step 5: Fetch Detailed Car Information from the Database
+//                let detailedCars: [Car] = try await Car.query(on: req.db)
+//                    .filter(\.$id ~~ nearbyCarIDs)
+//                    .all()
+//
+//                // Step 6: Return Simplified Car Information
+//                let simplifiedCars = detailedCars.map { Car.Simple(car: $0) }
+//                return simplifiedCars
+//        }
         
         func setFavoriteCar(req: Request) async throws -> HTTPStatus {
             let clientId = try req.jwt.verify(as: SessionToken.self).userId

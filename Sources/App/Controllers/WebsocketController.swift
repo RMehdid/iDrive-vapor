@@ -12,11 +12,13 @@ import Redis
 class Websocket {
     struct Controller: RouteCollection {
         func boot(routes: RoutesBuilder) throws {
-            routes.webSocket("ws", ":car_id", "setCoordinates", onUpgrade: setCoordinates)
-            routes.webSocket("ws", ":car_id", "getCoordinates", onUpgrade: getCoordinates)
+            let carSecured = routes.grouped(CarToken.asyncAuthenticator(), CarToken.guardMiddleware())
+            carSecured.webSocket("ws", "setCoordinates", onUpgrade: setCoordinates)
+            carSecured.webSocket("ws", "setFuelLevel", onUpgrade: setFuelLevel)
             
-            routes.webSocket("ws", ":car_id", "setFuelLevel", onUpgrade: setFuelLevel)
-            routes.webSocket("ws", ":car_id", "getFuelLevel", onUpgrade: getFuelLevel)
+            let userSecured = routes.grouped(SessionToken.asyncAuthenticator(), SessionToken.guardMiddleware())
+            userSecured.webSocket("ws", ":car_id", "getCoordinates", onUpgrade: getCoordinates)
+            userSecured.webSocket("ws", ":car_id", "getFuelLevel", onUpgrade: getFuelLevel)
         }
 
         func setCoordinates(req: Request, ws: WebSocket) {
@@ -34,7 +36,7 @@ class Websocket {
                 }
                 
                 // Store the coordinates in Redis with the carId as part of the key
-                let key = RedisKey("car_\(carId)_coordinates")
+                let key = RedisKey("car:\(carId):coordinates")
                 
                 let _ = req.redis.set(key, toJSON: coordinates)
                 
@@ -57,7 +59,7 @@ class Websocket {
             // Use a timer to periodically send data to the client
             let timer = req.eventLoop.scheduleRepeatedTask(initialDelay: .zero, delay: .seconds(10)) { task in
                 // Retrieve the coordinates from Redis using the carId
-                let key = RedisKey("car_\(carId)_coordinates")
+                let key = RedisKey("car:\(carId):coordinates")
                 // Wait for the EventLoopFuture to complete
                 req.redis.get(key, asJSON: Coordinates.self).whenComplete { result in
                     switch result {

@@ -10,7 +10,7 @@ enum Entrypoint {
         
         let app = Application(env)
         
-        app.redis.configuration = try RedisConfiguration(hostname: "localhost", port: 6379)
+        app.redis.configuration = try RedisConfiguration(hostname: "localhost", port: RedisConnection.Configuration.defaultPort)
         
         app.http.server.configuration.hostname = "0.0.0.0"
         app.http.server.configuration.port = 8000

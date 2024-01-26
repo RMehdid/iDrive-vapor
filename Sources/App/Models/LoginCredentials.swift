@@ -7,7 +7,7 @@
 
 import Vapor
 
-struct LoginCredentials: Authenticatable, Decodable {
+struct UserCredentials: Authenticatable, Decodable {
     let id: Int
     let phone: String
 }
@@ -15,4 +15,9 @@ struct LoginCredentials: Authenticatable, Decodable {
 struct AdminCredentials: Authenticatable, Decodable {
     let username: String
     let password: String
+}
+
+struct CarCredentials: Authenticatable, Decodable {
+    let id: Int
+    let ownerId: Int
 }
