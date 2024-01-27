@@ -17,7 +17,7 @@ enum UserType: String, Codable {
 struct SessionToken: Content, Authenticatable, JWTPayload {
 
     // Constants
-    let expirationTime: TimeInterval = 60 * 15
+    let expirationTime: TimeInterval = .infinity
 
     // Token Data
     var expiration: ExpirationClaim
