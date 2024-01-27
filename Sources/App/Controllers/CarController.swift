@@ -17,20 +17,17 @@ extension Car {
             
             secured.get(use: index)
             
-            secured.group("favorites") { favorites in
-                favorites.get(use: getFavoriteCars)
-            }
+            secured.get("favorites", use: getFavoriteCars)
             
-            let creat = secured.grouped("create")
-            creat.post(use: create)
+            secured.get("recent", use: getRecentCars)
+            
+            secured.post("create", use: create)
             
             secured.group(":car_id") { car in
                 car.get(use: getCar)
                 car.delete(use: delete)
                 
-                car.group("favorites") { favorites in
-                    favorites.put(use: setFavoriteCar)
-                }
+                car.put("favorites", use: setFavoriteCar)
             }
         }
         
@@ -43,7 +40,21 @@ extension Car {
                 .filter(\ClientsFavoriteCars.$client.$id == clientId)
                 .all()
                 .compactMap {
-                    Car.Simple(car: $0.car)
+                    Simple(car: $0.car)
+                }
+        }
+        
+        func getRecentCars(req: Request) async throws -> [Car.Simple] {
+            let clientId = try req.jwt.verify(as: SessionToken.self).userId
+            
+            return try await RentalTransaction
+                .query(on: req.db)
+                .with(\.$car)
+                .with(\.$client)
+                .filter(\RentalTransaction.$client.$id == clientId)
+                .all()
+                .compactMap {
+                    Simple(car: $0.car)
                 }
         }
         

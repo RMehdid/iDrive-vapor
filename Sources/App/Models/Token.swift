@@ -17,7 +17,7 @@ enum UserType: String, Codable {
 struct SessionToken: Content, Authenticatable, JWTPayload {
 
     // Constants
-    let expirationTime: TimeInterval = .infinity
+    let expirationTime: TimeInterval = 99999999999
 
     // Token Data
     var expiration: ExpirationClaim
@@ -38,7 +38,7 @@ struct SessionToken: Content, Authenticatable, JWTPayload {
 struct AdminToken: Content, Authenticatable, JWTPayload {
 
     // Constants
-    let expirationTime: TimeInterval = .infinity
+    let expirationTime: TimeInterval = 99999999999
 
     // Token Data
     var expiration: ExpirationClaim
@@ -56,7 +56,7 @@ struct AdminToken: Content, Authenticatable, JWTPayload {
 
 struct CarToken: Content, Authenticatable, JWTPayload {
     
-    let expirationTime: TimeInterval = .infinity
+    let expirationTime: TimeInterval = 99999999999
 
     // Token Data
     var expiration: ExpirationClaim
