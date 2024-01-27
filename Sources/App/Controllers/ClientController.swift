@@ -40,11 +40,16 @@ extension Client {
             return try await Client.query(on: req.db).all()
         }
         
-        func create(req: Request) async throws -> HTTPStatus {
-            let client = try req.content.decode(Client.self)
-            try await client.save(on: req.db)
+        func create(req: Request) async throws -> Client {
+            let client = try Client(from: req.content.decode(UserDTO.self))
             
-            return .ok
+            if try await Client.find(client.id, on: req.db) != nil {
+                throw Abort(.badRequest, reason: "user already exists")
+            } else {
+                try await client.save(on: req.db)
+            }
+            
+            return client
         }
         
         func update(req: Request) async throws -> HTTPStatus {

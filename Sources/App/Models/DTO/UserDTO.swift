@@ -8,23 +8,27 @@
 import Vapor
 
 struct UserDTO: Content {
-    let id: Int?
+    let id: Int
     let firstname: String
     let lastname: String
     let phone: String
     
-    init(id: Int? = nil, firstname: String, lastname: String, phone: String) {
+    init(id: Int, firstname: String, lastname: String, phone: String) {
         self.id = id
         self.firstname = firstname
         self.lastname = lastname
         self.phone = phone
     }
-    
-    init(from user: Client) {
-        self.init(id: user.id, firstname: user.firstname, lastname: user.lastname, phone: user.phone)
+}
+
+extension Client {
+    convenience init(from userDto: UserDTO) throws {
+        self.init(id: userDto.id, firstname: userDto.firstname, lastname: userDto.lastname, phone: userDto.phone, rating: 5.0)
     }
-    
-    init(from user: Owner) {
-        self.init(id: user.id, firstname: user.firstname, lastname: user.lastname, phone: user.phone)
+}
+
+extension Owner {
+    convenience init(from userDto: UserDTO) throws {
+        self.init(id: userDto.id, firstname: userDto.firstname, lastname: userDto.lastname, phone: userDto.phone, rating: 5.0)
     }
 }

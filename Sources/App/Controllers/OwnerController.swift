@@ -41,10 +41,16 @@ extension Owner {
             return try await Owner.query(on: req.db).all()
         }
         
-        func create(req: Request) async throws -> HTTPStatus {
-            let owners = try req.content.decode(Owner.self)
-            try await owners.save(on: req.db)
-            return .ok
+        func create(req: Request) async throws -> Owner {
+            let owner = try Owner(from: req.content.decode(UserDTO.self))
+            
+            if try await Owner.find(owner.id, on: req.db) != nil {
+                throw Abort(.badRequest, reason: "user already exists")
+            } else {
+                try await owner.save(on: req.db)
+            }
+            
+            return owner
         }
         
         func update(req: Request) async throws -> HTTPStatus {
