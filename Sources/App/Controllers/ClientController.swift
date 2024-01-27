@@ -14,7 +14,7 @@ extension Client {
             let clients = routes.grouped("clients")
             let secured = clients.grouped(SessionToken.asyncAuthenticator(), SessionToken.guardMiddleware())
             secured.get(use: index)
-            clients.post(use: create)
+            clients.post("create", use: create)
             secured.put(use: update)
             
             secured.group("me") { me in

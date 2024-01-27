@@ -15,7 +15,7 @@ extension Owner {
             let secured = owners.grouped(SessionToken.asyncAuthenticator(), SessionToken.guardMiddleware())
             
             secured.get(use: index)
-            owners.post(use: create)
+            owners.post("create", use: create)
             secured.put(use: update)
             
             secured.group("me") { me in
