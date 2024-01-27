@@ -12,22 +12,24 @@ extension RentalTransaction {
     struct Controller: RouteCollection {
         func boot(routes: RoutesBuilder) throws {
             let transactions = routes.grouped("rental_transactions")
-            transactions.get(use: getTransactions)
-            transactions.post(use: create)
+            let secured = transactions.grouped(SessionToken.asyncAuthenticator(), SessionToken.guardMiddleware())
             
-            transactions.group(":transaction_id") { transaction in
+            secured.get(use: getTransactions)
+            secured.post(use: create)
+            
+            secured.group(":transaction_id") { transaction in
                 transaction.group("start") { start in
                     start.put(use: updateStartDate)
                 }
             }
             
-            transactions.group(":transaction_id") { transaction in
+            secured.group(":transaction_id") { transaction in
                 transaction.group("end") { end in
                     end.put(use: updateEndDate)
                 }
             }
             
-            transactions.group(":transaction_id") { transaction in
+            secured.group(":transaction_id") { transaction in
                 transaction.group("price") { price in
                     price.put(use: updatePrice)
                 }
