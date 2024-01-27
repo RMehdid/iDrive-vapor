@@ -41,16 +41,22 @@ extension Owner {
             return try await Owner.query(on: req.db).all()
         }
         
-        func create(req: Request) async throws -> Owner {
+        func create(req: Request) async throws -> TokenReponse {
             let owner = try Owner(from: req.content.decode(UserDTO.self))
             
-            if try await Owner.find(owner.id, on: req.db) != nil {
+            guard try await Owner.find(owner.id, on: req.db) == nil else {
                 throw Abort(.badRequest, reason: "user already exists")
-            } else {
-                try await owner.save(on: req.db)
             }
             
-            return owner
+            try await owner.save(on: req.db)
+            
+            guard let id = owner.id else {
+                throw Abort(.internalServerError)
+            }
+            
+            let payload = SessionToken(userId: id, userType: .owner)
+            
+            return TokenReponse(token: try req.jwt.sign(payload))
         }
         
         func update(req: Request) async throws -> HTTPStatus {
