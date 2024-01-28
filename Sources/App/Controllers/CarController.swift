@@ -94,7 +94,7 @@ extension Car {
         func setFavoriteCar(req: Request) async throws -> HTTPStatus {
             let clientId = try req.jwt.verify(as: SessionToken.self).userId
             
-            guard var carId = req.parameters.get("car_id"), var carId = Int(carId) else {
+            guard let carId = req.parameters.get("car_id"), let carId = Int(carId) else {
                 throw Abort(.badRequest)
             }
             
